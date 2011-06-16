@@ -1,0 +1,7 @@
+name: NuxActivate
+main: com.bukkit.N4th4.NuxActivate.NuxActivate
+version: 1.0
+commands:
+    activate:
+        description: All of the NuxActivate commands
+        usage: Command unrecognised by NuxActivate.
