@@ -72,15 +72,15 @@ public class NuxActivate extends JavaPlugin {
             if (commandName.equalsIgnoreCase("Activate")) {
 				try {
 					Statement state = conn.createStatement();
-					ResultSet result = state.executeQuery("SELECT * FROM activations WHERE login='" + senderP.getName() + "'");
+					ResultSet result = state.executeQuery("SELECT token FROM activations WHERE login='" + senderP.getName() + "'");
 					result.last();
 					if (result.getRow() == 0) {
 						Timestamp time = new Timestamp(Calendar.getInstance().getTime().getTime());
-						state.executeUpdate("INSERT INTO activations VALUES ('" + senderP.getName() + "', ENCRYPT('" + senderP.getName() + time.getTime() + "'), 'pending')");
+						state.executeUpdate("INSERT INTO activations (login, token, state) VALUES ('" + senderP.getName() + "', ENCRYPT('" + senderP.getName() + time.getTime() + "'), 'pending')");
 						conn.commit();
+						result.close();
+						result = state.executeQuery("SELECT token FROM activations WHERE login='" + senderP.getName() + "'");
 					}
-					result.close();
-					result = state.executeQuery("SELECT * FROM activations WHERE login='" + senderP.getName() + "'");
 					result.first();
 					senderP.sendMessage(ChatColor.GREEN + "[NuxActivate] Your token is : \"" +result.getString("token") + "\"");
 					result.close();
