@@ -45,7 +45,7 @@ public class NuxActivate extends JavaPlugin {
 			conn.setAutoCommit(false);
 			
 			Statement state = conn.createStatement();
-			state.executeUpdate("CREATE TABLE IF NOT EXISTS activateTable (login VARCHAR(100) NOT NULL, token VARCHAR(100) NOT NULL, state VARCHAR(10) NOT NULL DEFAULT 'pending');");
+			state.executeUpdate("CREATE TABLE IF NOT EXISTS activations (login VARCHAR(100) NOT NULL, token VARCHAR(100) NOT NULL, state VARCHAR(10) NOT NULL DEFAULT 'pending');");
 			state.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -72,16 +72,17 @@ public class NuxActivate extends JavaPlugin {
             if (commandName.equalsIgnoreCase("Activate")) {
 				try {
 					Statement state = conn.createStatement();
-					ResultSet result = state.executeQuery("SELECT * FROM activateTable WHERE login='" + senderP.getName() + "'");
+					ResultSet result = state.executeQuery("SELECT * FROM activations WHERE login='" + senderP.getName() + "'");
 					result.last();
 					if (result.getRow() == 0) {
 						Timestamp time = new Timestamp(Calendar.getInstance().getTime().getTime());
-						state.executeUpdate("INSERT INTO activateTable VALUES ('" + senderP.getName() + "', ENCRYPT('" + senderP.getName() + time.getTime() + "'), 'pending')");
+						state.executeUpdate("INSERT INTO activations VALUES ('" + senderP.getName() + "', ENCRYPT('" + senderP.getName() + time.getTime() + "'), 'pending')");
+						conn.commit();
 					}
 					result.close();
-					result = state.executeQuery("SELECT * FROM activateTable WHERE login='" + senderP.getName() + "'");
+					result = state.executeQuery("SELECT * FROM activations WHERE login='" + senderP.getName() + "'");
 					result.first();
-					senderP.sendMessage(ChatColor.GREEN + "[NuxActivate] Your token is : " +result.getString("token"));
+					senderP.sendMessage(ChatColor.GREEN + "[NuxActivate] Your token is : \"" +result.getString("token") + "\"");
 					result.close();
                     state.close();
 				} catch (SQLException e) {
